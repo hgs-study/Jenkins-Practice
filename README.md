@@ -99,6 +99,24 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 + 깃허브 레포지토리의 [Settings] - [Webhooks]
 ![image](https://user-images.githubusercontent.com/76584547/128876700-6d1c5707-c96d-4b53-b63a-833d147ffc79.png)
 
++ URL에 "젠킨스서버:8080/github-webhook/"을 적고 Content type은 application/json으로 설정한다.
+![image](https://user-images.githubusercontent.com/76584547/128881114-27b75303-b759-4702-ab46-b30d58266037.png)
+
++ 결과
+![image](https://user-images.githubusercontent.com/76584547/128881293-f95002cc-6eda-4715-830c-cd4dc581f319.png)
+
+
+#### Project Push
++ 프로젝트에서 "/push" api를 생성해서 "GitHub Webhook <-> Jenkins Push Test" commit message 생성
+![image](https://user-images.githubusercontent.com/76584547/128881734-1ef9df95-4702-426b-9a7d-f5bee5ecf487.png)
+
++ 푸쉬 확인
+![image](https://user-images.githubusercontent.com/76584547/128882084-037814b4-0593-4c2c-9ea8-224be1872651.png)
+
++ 깃허브 프로젝트를 pull한 후, "/var/lib/jenkins/workspace/jenkins-practice" 경로에 저장된 걸 확인할 수 있다.
+![image](https://user-images.githubusercontent.com/76584547/128882578-e68e0bcd-1ced-45f2-a32d-9a3d40dae184.png)
+
++ CI 구축 완료!
 
 #### 참고
 ---
