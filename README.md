@@ -1,4 +1,9 @@
-## Jenkins-Practice
+## Jenkins-CI & CD
+
+<br/>
+
+### CI 구축
+---
 
 #### Java 8 설치
 ---
@@ -117,6 +122,70 @@ sudo cat /var/lib/jenkins/secrets/initialAdminPassword
 ![image](https://user-images.githubusercontent.com/76584547/128882578-e68e0bcd-1ced-45f2-a32d-9a3d40dae184.png)
 
 + CI 구축 완료!
+
+
+### CD 구축
+---
+
+#### Gradle로 실행 파일 만들기
+---
++ 젠킨스 메인 페이지에서 젠킨스 관리 - Global tool configuration 설정으로 들어간다. 이후 Gradle 섹션을 찾아 Add Gradle버튼을 누르고 프로젝트 Gradle과 버전을 맞춰서 선택
+![image](https://user-images.githubusercontent.com/76584547/128883568-8183dd5c-76a6-41cd-8591-02dd26dcd521.png)
+
++ 다음으로 생성한 젠킨스 아이템으로 들어가 구성 - Build 설정으로 들어간다. 그리고 Add build step - Invoke Gradle Script 를 선택하여 다음 그림처럼 설정해준다.
+![image](https://user-images.githubusercontent.com/76584547/128884417-57e4b994-f720-4179-8f7b-f89c19680d88.png)
+
+
++ 다음엔 오른쪽 하단에 있는 고급.. 버튼을 누르고 다음과 같이 설정 후 저장한다.
+  + 그러면 CI 과정을 거쳐서 자동으로 /var/lib/jenkins/workspace/Jenkins-Practice/build/libs 경로에 실행 파일을 생성한다.
+![image](https://user-images.githubusercontent.com/76584547/128884705-8a487160-36b9-4b38-ac6d-25723c4b961e.png)
+
+
+#### SSH로 배포 및 쉘 스크립트 실행
+---
++ 젠킨스 관리 - 플러그인 관리 로 들어가 Publish Over SSH 플러그인을 설치한다.
+![image](https://user-images.githubusercontent.com/76584547/128884927-208e6c3d-c396-4312-a16a-dd51458a0cd1.png)
+
+
++ 젠킨스 관리 - 시스템 설정 으로 들어가 방금 설치한 Publish Over SSH 플러그인 설정을 다음과 같이 구성한다. (가장 아래에 해당 설정이 있다.)
+![image](https://user-images.githubusercontent.com/76584547/128885796-68535ad9-a7cc-4824-8dbb-32a79a86881d.png)
+
+```
+Key : 서버가 구동 중인 EC2 인스턴스의 .pem 파일 내용을 복사해서 붙여넣는다.
+
+Hostname : 서버가 구동 중인 EC2 인스턴스의 IP를 적어준다.
+
+Username : 접속하려는 유저를 적어준다.
+
+Remote Directory : 접속했을 때의 기본 디렉터리를 설정한다.
+```
+
++ 이후 아이템의 구성 - 빌드 후 조치 추가 - Send build artifacts over SSH 설정에 들어가서 다음과 같이 설정한다.
+![image](https://user-images.githubusercontent.com/76584547/128886425-3fafb77c-3578-4e14-9f33-96bdd573d271.png)
+
+
+```
+ㅇ Source files : 배포하려는 파일 지정
+- build/libs/*.jar
+
+ㅇ Remove prefix : 배포하려는 파일이 속해 있는 디렉토리 정보를 제거하기 위해 필요
+- build/libs
+
+ㅇ Remote directory : 배포하려는 디렉토리의 위치
+- app
+
+ㅇ Exec command : ssh 배포 후 실행하는 명령어 - 여기선 deploy.sh 를 실행한다.
+- /home/ec2-user/app/deploy.sh > /dev/null 2>&1
+```
+
++ /dev/null 2>&1 는 표준 출력과 표준 입력을 버리는 것이다. 만약 이 내용을 적어주지 않으면, 젠킨스가 쉘 스크립트를 실행한 후 빠져나오지 못하게 되므로 반드시 붙여줘야 한다!
++ 주의 사항
+  + 반드시 Exec command 에 절대 경로를 설정해줘야 한다.
+  + 쉘 스크립트 실행 시 스크립트 안에 있는 모든 명령어들은 반드시 절대 경로를 사용해야 한다.
+
+
+
+
 
 #### 참고
 ---
