@@ -10,4 +10,9 @@ public class requestController {
     public String test(){
        return "test";
     }
+
+    @GetMapping("/push")
+    public String push(){
+       return "push test";
+    }
 }
